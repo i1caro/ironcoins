@@ -33,7 +33,7 @@ class Point(object):
         return False
 
     def __str__(self):
-        return '(%s, %s)' % (self.x, self.y)
+        return '(%s,%s)' % (self.x, self.y)
 
 class Vector(Point):
     pass

@@ -1,27 +1,17 @@
 from tests.main import MainTestClass
 from mathematical.tests.object_init import NewTestPoint
+from mathematical.trigonometry import Point
 
-class TestPoint(MainTestClass, NewTestPoint):
+class TestPoint(MainTestClass):
 
     def test_sum(self):
-        self.init_new_points()
-        point_c = self.point_a + self.point_b
-        x ,y = self.get_sum()
-
-        self.assertEqual(point_c.x, x)
-        self.assertEqual(point_c.y, y)
+        result = Point(5,7) + Point(4,10)
+        self.assertEqual('(9,17)', str(result))
 
     def test_sub(self):
-        self.init_new_points()
-        point_c = self.point_a + self.point_b
-        x ,y = self.get_sum()
-
-        self.assertEqual(point_c.x, x)
-        self.assertEqual(point_c.y, y)
+        result = Point(5,7) - Point(4,10)
+        self.assertEqual('(1,-3)', str(result))
 
     def test_equality(self):
-        self.init_new_points()
-        point_c = self.point_a
-        
-        self.assertEqual(point_c.x, self.point_a.x)
-        self.assertEqual(point_c.y, self.point_a.y)
+        result = Point(5,7)
+        self.assertEqual('(5,7)', str(result))
