@@ -1,3 +1,4 @@
+import math
 
 class Point(object):
     def __init__(self, x, y):
@@ -35,26 +36,30 @@ class Point(object):
         return '(%s,%s)' % (self.x, self.y)
 
 class Vector(object):
-    def __init__(self, a, b):
-        self.a = a
-        self.b = b
+    def __init__(self, origin, destination=None):
+        if origin and destination:
+            self.origin = origin
+            self.destination = destination
+        else:
+            self.origin = Point(0,0)
+            self.destination = destination
         self.x, self.y = self.calculate_vector()
         self.norm = self.calculate_norm()
 
     def calculate_vector(self):
-        point_dist = self.b - self.a
+        point_dist = self.destination - self.origin
         return point_dist.x, point_dist.y
 
     def calculate_norm(self):
         return self.x**2 + self.y**2        
 
     def __add__(self, other):
-        return Vector(Point(0,0), 
-            Point(self.x + other.x, self.y + other.y))
+        return Vector(Point(self.x + other.x, 
+                    self.y + other.y))
 
     def __sub__(self, other):
-        return Vector(Point(0,0), 
-            Point(self.x - other.x, self.y - other.y))
+        return Vector(Point(self.x - other.x, 
+                    self.y - other.y))
 
     def __iadd__(self, other):
         self.x = self.x + other.x
@@ -69,3 +74,48 @@ class Vector(object):
     def __str__(self):
         return '(%s,%s)' % (self.x, self.y)
 
+# make tests
+class VancouverDistance(Vector):
+    def abs(self, point):
+        new_point.x = abs(point.x)
+        new_point.y = abs(point.y)
+        return new_point
+
+    def is_odd(self, num):
+        if num % 2 == 1:
+            return True
+        return False
+
+    def compare_axis_y(self):
+        if self.origin.y < self.destination.y:
+            return -1
+        elif self.origin.y == self.destination.y:
+            return 0
+        else:
+            return 1
+
+    def correction(self):
+        y_comparison = self.compare_axis_y()
+        if self.is_odd(self.x) or y_comparison == 0:
+            correction = 0
+        else:
+            if y_comparison < 0:
+                correction = self.origin.x % 2
+            elif y_comparison > 0:
+                correction = self.destination.x % 2
+        return correction
+
+
+    def calculate_vector(self):
+        point_dist = self.destination - self.origin
+        point_dist_abs = self.abs(point_dist)
+        return point_dist_abs.x, point_dist_abs.y
+
+    def get_vancouver_max(self):
+        return max(0, self.y - math.floor(x/2))
+
+    def calculate_norm(self):
+        correction = self.correction()
+        vancouver_max = self.get_vancouver_max()
+        return vancouver_max + self.x - correction
+        
