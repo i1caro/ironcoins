@@ -35,6 +35,35 @@ class Point(object):
     def __str__(self):
         return '(%s,%s)' % (self.x, self.y)
 
+class Hex(Point):
+    @property
+    def side_north_west(self):
+        return Hex(self.x-1,self.y)
+    @property
+    def side_north(self):
+        return Hex(self.x,self.y+1)
+    @property
+    def side_north_east(self):
+        return Hex(self.x+1,self.y)
+    @property
+    def side_south_east(self):
+        return Hex(self.x+1,self.y-1)
+    @property
+    def side_south(self):
+        return Hex(self.x,self.y-1)
+    @property
+    def side_south_west(self):
+        return Hex(self.x-1,self.y-1)
+
+    def __iter__(self):
+        yield self.side_north_west
+        yield self.side_north
+        yield self.side_north_east
+        yield self.side_south_east
+        yield self.side_south
+        yield self.side_south_west
+
+
 class Vector(object):
     def __init__(self, origin, destination=None):
         if origin and destination:
@@ -42,7 +71,7 @@ class Vector(object):
             self.destination = destination
         else:
             self.origin = Point(0,0)
-            self.destination = destination
+            self.destination = origin
         self.x, self.y = self.calculate_vector()
         self.norm = self.calculate_norm()
 
@@ -104,7 +133,6 @@ class VancouverDistance(Vector):
             elif y_comparison > 0:
                 correction = self.destination.x % 2
         return correction
-
 
     def calculate_vector(self):
         point_dist = self.destination - self.origin

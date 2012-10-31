@@ -11,8 +11,9 @@ class MainTestClass(unittest.TestCase):
     def tearDown(self):
         self.testbed.deactivate()
 
-    def test_is_active(self):
-        self.assertEqual(1, 1)
+    # @unittest.skip('See if its active')
+    # def test_is_active(self):
+    #     self.assertEqual(1, 1)
 
 if __name__ == '__main__':
     unittest.main()
