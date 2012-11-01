@@ -1,6 +1,8 @@
+from main.models import ReadableObject
 import math
+import copy
 
-class Point(object):
+class Point(ReadableObject):
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -63,8 +65,7 @@ class Hex(Point):
         yield self.side_south
         yield self.side_south_west
 
-
-class Vector(object):
+class Vector(ReadableObject):
     def __init__(self, origin, destination=None):
         if origin and destination:
             self.origin = origin
@@ -103,9 +104,10 @@ class Vector(object):
     def __str__(self):
         return '(%s,%s)' % (self.x, self.y)
 
-# make tests
+# makes sence if hexes are used
 class VancouverDistance(Vector):
     def abs(self, point):
+        new_point = copy.copy(point)
         new_point.x = abs(point.x)
         new_point.y = abs(point.y)
         return new_point
@@ -140,7 +142,7 @@ class VancouverDistance(Vector):
         return point_dist_abs.x, point_dist_abs.y
 
     def get_vancouver_max(self):
-        return max(0, self.y - math.floor(x/2))
+        return max(0, self.y - math.floor(self.x/2))
 
     def calculate_norm(self):
         correction = self.correction()

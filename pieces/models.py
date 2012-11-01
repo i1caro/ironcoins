@@ -1,7 +1,4 @@
-class ReadableObject(object):
-    def __repr__(self):
-        return '%s<%s>'  % (self.__class__.name
-            , self.__str__)
+from main.models import ReadableObject
 
 class Figure(ReadableObject):
     name = None

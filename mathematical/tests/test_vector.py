@@ -22,3 +22,6 @@ class TestVector(MainTestClass):
     def test_sub(self):
         result = self.vector_a - self.vector_b
         self.assertEqual('(5,-2)', str(result))
+
+
+        
