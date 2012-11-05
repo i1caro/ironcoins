@@ -23,6 +23,11 @@ class Point(ReadableObject):
         self.x = self.x - other.x
         self.y = self.y - other.y
 
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
+        return False
+
     def distance(self, other):
         dist = (other.x - self.x)**2
         dist+= (other.y - self.y)**2
@@ -147,5 +152,6 @@ class VancouverDistance(Vector):
     def calculate_norm(self):
         correction = self.correction()
         vancouver_max = self.get_vancouver_max()
-        return vancouver_max + self.x - correction
+        total = vancouver_max + self.x - correction
+        return int(total)
         

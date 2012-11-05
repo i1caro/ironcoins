@@ -1,5 +1,6 @@
 class ReadableObject(object):
     def __repr__(self):
-        return '%s<%s>'  % (self.__class__.name
-            , self.__str__)
+        return self.__str__()
+        # return '%s<%s>'  % (self.__class__.name
+        #     , self.__str__)
 
