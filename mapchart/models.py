@@ -3,11 +3,14 @@ from main.models import ReadableObject
 import sys
 import pdb
 
+
 class MapChart(ReadableObject):
     name = None
     point_class = None
     size_x = None
     size_y = None
+
+    
 
     def __init__(self, 
                 name, 
@@ -19,11 +22,34 @@ class MapChart(ReadableObject):
         self.size_x = size_x
         self.size_y = size_y
 
+    def set_map(self, terrain_map):
+        self.terrain_map = terrain_map
+
     def __str__(self):
         return 'Map[%s](%s,%s)' % (
                         self.name,
                         self.size_x, 
                         self.size_y)
+
+    def cost(self, location):
+        cost = self.terrain_map[location.x][location.y]
+        return cost + 3
+
+    def children(self, node):
+        for child in node.children():
+            if self.is_inside_map(child) and self.has_path(child):
+                yield child
+
+    def has_path(self, node):
+        if self.terrain_map[node.x][node.y] is 0:
+            return False
+        else:
+            return True
+
+    def is_inside_map(self, node):
+        if node.x >= 0 and node.x < self.size_x and node.y >= 0 and node.y < self.size_y:
+            return True
+        return False
 
     def heuristic(self, origin, destination):
         vector = VancouverDistance(origin, 
@@ -41,7 +67,7 @@ class MapChart(ReadableObject):
         while(found == False and len(fringe)):
             fmin = sys.maxint
             for node in fringe: 
-                (g, parent) = cache.get(str(node), (0, None))
+                g = cache.get(str(node), (0, None))[0]
                 fcost = g + self.heuristic(node, destination)
                 if fcost > flimit:
                     fmin = min(fcost, fmin)
@@ -50,32 +76,33 @@ class MapChart(ReadableObject):
                     found = True
                     break
                     # reversed(node)
-                for child in node:
-                    g_child = g + 1#distance between(node and child)
+                index_node = fringe.index(node)
+                for child in self.children(node):
+                    g_child = g + self.cost(child)
                     child_cache = cache.get(str(child), None) 
                     if child_cache != None:
-                        (g_cached, parent) = child_cache
+                        g_cached = child_cache[0]
                         if g_child >= g_cached:
                             continue
                     if child in fringe:
                         fringe.remove(child)
-                    index_node = fringe.index(node)
                     fringe.insert(index_node+1, child)
                     cache[str(child)] = (g_child, node)
                 fringe.remove(node)
             flimit = fmin
 
+        path = False
         if found == True:
-            self.reverse_path(cache, destination)
+            path = self.reverse_path(cache, destination)
+        return path
 
     def reverse_path(self, cache, destination):
         g, parent = cache[str(destination)]
         if parent:
-            self.reverse_path(cache, parent)
-        print '%s' % destination
+            return [destination] + self.reverse_path(cache, parent)
+        else:
+            return [destination]
 
-def test_map():
-    from mathematical.trigonometry import Hex
-    return MapChart('my_map',None,10,10).shortest_path(Hex(1,2), Hex(10,20))
+
 
 

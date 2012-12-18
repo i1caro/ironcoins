@@ -62,7 +62,7 @@ class Hex(Point):
     def side_south_west(self):
         return Hex(self.x-1,self.y-1)
 
-    def __iter__(self):
+    def children(self):
         yield self.side_north_west
         yield self.side_north
         yield self.side_north_east
@@ -155,3 +155,13 @@ class VancouverDistance(Vector):
         total = vancouver_max + self.x - correction
         return int(total)
         
+
+
+
+
+
+
+
+
+
+
