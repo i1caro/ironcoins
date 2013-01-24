@@ -1,8 +1,6 @@
-from main.models import ReadableObject
 import math
-import copy
 
-class Point(ReadableObject):
+class Point(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -42,6 +40,12 @@ class Point(ReadableObject):
     def __str__(self):
         return '(%s,%s)' % (self.x, self.y)
 
+    def __repr__(self):
+        return self.__str__()
+
+    def __hash__(self):
+        return hash('%s %s' % (self.x, self.y))
+
 class Hex(Point):
     @property
     def side_north_west(self):
@@ -70,14 +74,13 @@ class Hex(Point):
         yield self.side_south
         yield self.side_south_west
 
-class Vector(ReadableObject):
+class Vector(object):
     def __init__(self, origin, destination=None):
         if origin and destination:
             self.origin = origin
             self.destination = destination
         else:
             self.origin = Point(0,0)
-            self.destination = origin
         self.x, self.y = self.calculate_vector()
         self.norm = self.calculate_norm()
 
@@ -109,13 +112,13 @@ class Vector(ReadableObject):
     def __str__(self):
         return '(%s,%s)' % (self.x, self.y)
 
+    def __repr__(self):
+        return self.__str__()
+
 # makes sence if hexes are used
 class VancouverDistance(Vector):
     def abs(self, point):
-        new_point = copy.copy(point)
-        new_point.x = abs(point.x)
-        new_point.y = abs(point.y)
-        return new_point
+        return abs(point.x), abs(point.y)
 
     def is_odd(self, num):
         if num % 2 == 1:
@@ -143,9 +146,8 @@ class VancouverDistance(Vector):
 
     def calculate_vector(self):
         point_dist = self.destination - self.origin
-        point_dist_abs = self.abs(point_dist)
-        return point_dist_abs.x, point_dist_abs.y
-
+        return self.abs(point_dist)
+        
     def get_vancouver_max(self):
         return max(0, self.y - math.floor(self.x/2))
 
@@ -154,6 +156,7 @@ class VancouverDistance(Vector):
         vancouver_max = self.get_vancouver_max()
         total = vancouver_max + self.x - correction
         return int(total)
+
         
 
 

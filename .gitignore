@@ -1,6 +1,9 @@
 *.py[co]
 #Files
 test_runner.py
+kernprof.py
+*.prof
+*.lprof
 
 # Packages
 *.egg
