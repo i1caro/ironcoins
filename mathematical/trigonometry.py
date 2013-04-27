@@ -1,5 +1,6 @@
 import math
 
+
 class Point(object):
     def __init__(self, x, y):
         self.x = x
@@ -31,12 +32,6 @@ class Point(object):
         dist+= (other.y - self.y)**2
         return dist
 
-    def in_distance(self, other, distance):
-        norm_distance = distance ** 2
-        if self.distance(other) >= norm_distance:
-            return True
-        return False
-
     def __str__(self):
         return '(%s,%s)' % (self.x, self.y)
 
@@ -45,6 +40,7 @@ class Point(object):
 
     def __hash__(self):
         return hash('%s %s' % (self.x, self.y))
+
 
 class Hex(Point):
     @property
@@ -73,6 +69,10 @@ class Hex(Point):
         yield self.side_south_east
         yield self.side_south
         yield self.side_south_west
+
+    def distance(self, other):
+        return helper_vancounver_distance(self, other)
+
 
 class Vector(object):
     def __init__(self, origin, destination=None):
@@ -114,6 +114,11 @@ class Vector(object):
 
     def __repr__(self):
         return self.__str__()
+
+
+def helper_vancounver_distance(origin, destination):
+    vector = VancouverDistance(origin, destination)
+    return vector.calculate_norm()
 
 # makes sence if hexes are used
 class VancouverDistance(Vector):

@@ -1,121 +1,105 @@
-import sys
+from mapchart.exceptions import OverWriteError
+from mapchart.exceptions import NoMoreActionsError
+from collections import deque
 
-CONTINUE = True
-FINISH = False
+import functools
 
 
-class Action(object):
-    def __init__(self, item, iniative):
-        self.item = item
-        self.initiative = initiative
+def delay_initiative(initiative):
+    return initiative + 1
 
-    def prepare(self, attribute, args={}):
-        self.attribute = attribute
-        self.args = args
-
-    def do(self):
-        function = getattr(self.item, self.attribute)
-        return function(**self.args)
-
-    def __cmp__(self, other):
-        if self.initiative > other.initiative:
-            return -1
-        if self.initiative == other.initiative:
-            return 0
-        else:
-            return 1
-
-class Move(Action):
-    MAX_MOVEMENT = sys.maxint
-    MOVE_FUNCTION = 'move'
-    path_index = 0
-
-    def __init__(self, initiative, item, path, chart):
-        self.path = path
-        self.chart = chart
-        super(Move, self).__init__(initiative, item)
-
-    def do(self):
-        super(Move, self).do()
-        if self.prepare_next_move():
-            return [self]
-        else:
-            return None
-
-    def prepare_next_move(self):
-        self.initiative = self.calc_new_initiative()
-        next_point = self.get_next_point()
-        if next_point:
-            cost = self.get_move_cost(next_point)
-            if self.can_move(cost):
-                args = self.create_args(next_point, cost)
-                self.prepare(self.MOVE_FUNCTION, args)
-            return self.CONTINUE
-        else:
-            return self.FINISH
-
-    def create_args(self, point, movement_cost):
-        result = {'movement_cost':movement_cost, 
-                        'point':point}
-        return result
-
-    def get_next_point(self):
-        if self.path_index > len(self.path)-1:
-            result = self.path[self.path_index]
-            self.path_index += 1
-        else:
-            result = None
-        return result
-
-    def can_move(self, cost):
-        return cost <= self.item.get_movement()
-
-    def calc_movement_cost(self, point):
-        cost = self.chart[point.x][point.y]
-        if cost:
-            return cost
-        else:
-            return self.MAX_MOVEMENT
-
-    def calc_new_initiative(self):
-        return self.initiative -=1
-
-    def calc_new_path(self):
-        return self.path[1:]
-
-    def prepare(self, iniative, path):
-        self.attribute = attribute
-        self.args = args
+def rush_initiative(initiative):
+    return initiative - 1
 
 
 class Engine(object):
-    def __init__(self, actions=list()):
-        self.actions = actions
-        self.actions.sort(reverse=True)
+    TIME = 12
+
+    def __init__(self, actions):
+        actions.sort()
+        self.timetable = [list() for t in self.TIME]
+        self.put_actions_into_timetable(actions)
+
+    def put_actions_into_timetable(self, actions):
+        for action in actions:
+            self.timetable[action.initiative].append(action)
 
     def start(self):
-        while(self.actions):
-            act = self.actions.pop()
-            new_actions = act.do()
-            if new_actions:
-                self.queu_insert(new_actions)
+        for action in self.timetable:
+            unplayed = self.play_actions(actions)
+            try:
+                self.put_actions_into_timetable(unplayed)
+            except IndexError:
+                pass            
 
-    def queu_insert(self, new_actions):
-        self.actions.extend(new_actions)
-        self.actions.sort(reverse=True)
+    def play_actions(self, actions):
+        unplayed = list()
+        for action in actions:
+            try:
+                action.do()
+            except NoMoreActionsError:
+                pass
+            except OverWriteError:
+                delayed = self.delay_action(action)
+                uplayed.extend(delayed)
+        return unplayed
+
+    def delay_action(self, action):
+        next_initiative = action.get_next_initiative()
+        if next_initiative:
+            action.initiative = next_initiative
+            return [action]
+        return []
 
 
+@functools.total_ordering
+class Action(object):
+    def __init__(self, initiative):
+        self.initiative = initiative
+
+    def __eq__(self, other):
+        return (self.initiative == other.initiative)
+
+    def __lt__(self, other):
+        return (self.initiative < other.initiative)
+
+    def get_next_initiative(self):
+        return None
 
 
+class Movement(Action):
+    def __init__(self, initiative, piece, destination):
+        self.piece = piece
+        self.destination = destination
+        self.path = self.create_path(piece, destination)
+        self.in_bettween_move = None
+        super(Movement, self).__init__(initiative)
 
+    def create_path(self, piece, destination):
+        from mathematical.trigonometry import Hex
+        import random
+        sample_list = [Hex(1,2), Hex(4,2), Hex(2,2), Hex(5,3), Hex(6,2),
+                        Hex(5,4), Hex(4,5), Hex(2,6), Hex(1,3), Hex(4,4)]
+        rrange = random.randrange(1,6)
+        return random.sample(sample_list, rrange)
+    #     map_matrix = self.piece.map
+    #     return map_matrix.shortest_path(piece.position, destination)
 
+        
+    def do(self):
+        if not self.in_bettween_move:
+            try:
+                self.in_bettween_move = self.path.pop(0)
+            except IndexError:
+                raise NoMoreActionsError
+        self.piece.move(move)
+        self.in_bettween_move = None
 
-
-
-
-
-
-
+    def get_next_initiative(self):
+        if self.path:
+            self.initiative = delay_initiative(self.initiative)
+            return self.initiative
+        return None
 
 
 

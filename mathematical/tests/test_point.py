@@ -16,8 +16,4 @@ class TestPoint(MainTestClass):
 
     def test_distance(self):
         result = Point(5,7).distance(Point(5,8))
-        self.assertEqual(1, result)        
-
-    def test_in_distance(self):
-        result = Point(5,7).in_distance(Point(5,8), 1)
-        self.assertTrue(result)
+        self.assertEqual(1, result)
