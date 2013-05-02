@@ -2,19 +2,11 @@ from mathematical.trigonometry import Hex
 import functools
 import sys
 
-# def Position(Hex):
-#     def __init__(self, x, y, where):
-#         self.where = where
-#         super(Position, self).__init__(x, y)
-
-#     def move(self, destination):
-#         self.where.move(self, destination)
-
 
 @functools.total_ordering
-class FigureStat(object):
+class Stat(object):
     def __init__(self, stat, turn_stat=None):
-        self.stat = stat
+        self.born_stat = stat
         self.turn_stat = turn_stat
 
     def __eq__(self, other):
@@ -27,22 +19,16 @@ class FigureStat(object):
         return '%s' % self.value
 
     def add(self, value):
-        self.stat = self.add_function(self.stat, value)
+        self.born_stat = self.add_function(self.born_stat, value)
 
     def turn_add(self, value):
         self.turn_stat = self.add_function(self.turn_stat, value)
 
     def regenerate(self):
-        self.turn_set(None)
-
-    def set(self, value):
-        self.stat = value
-
-    def turn_set(self, value):
-        self.turn_stat = value        
+        self.turn_stat = None
 
     def _value(self):
-        return self.add_function(self.stat, self.turn_stat)
+        return self.add_function(self.born_stat, self.turn_stat)
     value = property(_value)
 
     @staticmethod
@@ -54,28 +40,32 @@ class FigureStat(object):
         return result
 
 
-class FigureStats(objects):
+class FigureStats(object):
     def __init__(self, **kargs):
         for name, value in kargs.items():
             self.create_stat(name, value)
             
     def create_stat(self, name, value):
-        setattr(self, name, FigureStat(stat=value))
+        setattr(self, name, value)
 
     def regenerate(self):
         for stat in self.__dict__.values():
-            stat.regenerate()
+            try:
+                stat.regenerate()
+            except AttributeError:
+                pass
 
 
 class Figure(object):
     MAX_MOVEMENT = sys.maxint
 
-    def __init__(self, name, position, map, movement, **kargs):
+    def __init__(self, name, position, located_map, movement, **kargs):
         self.name = name
-        self.position = position
+        self.map = located_map
         if not kargs:
             kargs = dict()
-        kargs[movement] = movement
+        kargs['movement'] = movement
+        kargs['position'] = position
         self.stats = FigureStats(**kargs)
 
     def __str__(self):

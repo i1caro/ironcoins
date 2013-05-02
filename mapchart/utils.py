@@ -36,10 +36,7 @@ class Fringe(object):
 class ShortestDistance(object):
     def __init__(self, inside_map_function, node_cost_function):
         self.is_inside_map = inside_map_function
-        self.has_path = node_cost_function
-
-    def set_cost(self, func):
-        self.cost = func
+        self.cost = node_cost_function
 
     def children(self, node):
         for child in node.children():

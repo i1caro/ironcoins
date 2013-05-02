@@ -29,7 +29,11 @@ class TestHex(MainTestClass):
         self.assertEqual('(1,1)', str(result))
 
     def test_all_sides(self):
-        result = 0
-        for i in self.hex_tile:
-            result = result+1
-        self.assertEqual(6, result)        
+        result = sum([1 for i in self.hex_tile.children()])
+        self.assertEqual(6, result)
+
+    def test_distance(self):
+        hex_a = self.hex_tile.side_south
+        hex_b = self.hex_tile.side_north_east
+        result = hex_a.distance(hex_b)
+        self.assertEqual(2, result)

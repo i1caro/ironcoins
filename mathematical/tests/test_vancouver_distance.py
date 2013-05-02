@@ -14,9 +14,14 @@ class TestVancouverDistance(MainTestClass):
         result = self.get_object()
         self.assertEqual('(1,4)', str(result))
 
+    def test_distance(self):
+        result = self.get_object().distance()
+        self.assertEqual('(1, 4)', str(result))
+
     def test_abs(self):
-        result = self.get_object().abs(Hex(-2,6))
-        self.assertEqual('(2,6)', str(result))
+        result_x, result_y = self.get_object().abs(Hex(-2,6))
+        self.assertEqual('2', str(result_x))
+        self.assertEqual('6', str(result_y))
 
     def test_is_odd(self):
         result = self.get_object().is_odd(1)
@@ -35,7 +40,7 @@ class TestVancouverDistance(MainTestClass):
         self.assertEqual(4, result)        
 
     def test_norm(self):
-        result = self.get_object().calculate_norm()
+        result = self.get_object().calc()
         self.assertEqual(5, result)
 
 
