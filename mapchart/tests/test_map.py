@@ -22,17 +22,17 @@ class TestMap(MainTestClass):
 
     def test_cost(self):
         result = self.create_map().cost(self.origin)
-        self.assertTrue(isinstance(int, result))
+        self.assertTrue(isinstance(result, int))
 
     def test_put_piece(self):
         test_map = self.create_map()
-        test_map.put_piece(self.origin, self.piece)
+        test_map.put_piece(self.piece, self.origin)
         result = test_map.get_piece(self.origin)
-        self.assertEqual(piece, result)
+        self.assertEqual(self.piece, result)
 
     def test_clear_piece(self):
         test_map = self.create_map()
-        test_map.put_piece(self.origin, self.piece)
+        test_map.put_piece(self.piece, self.origin)
         test_map.clear_piece(self.origin)
         result = test_map.get_piece(self.origin)
         self.assertEqual(None, result)
@@ -43,3 +43,10 @@ class TestMap(MainTestClass):
         result = test_map.shortest_path(self.origin, self.destination)
         path = '(2,2)(2,3)(2,4)'
         self.assertEqual(path, str(result))
+
+
+
+
+
+
+

@@ -2,6 +2,7 @@ from tests.main import MainTestClass
 from mapchart.models import Plot
 from mapchart.constants import TERRAIN_COSTS
 from mapchart.constants import GRASS
+from pieces.models import Figure
 
 class TestPlot(MainTestClass):
     grass_type = GRASS

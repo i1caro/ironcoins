@@ -34,6 +34,9 @@ class Plot(object):
     def __str__(self):
         return 'Piece %s->%s' % (self.type, self.piece)
 
+    def __repr__(self):
+        return str(self)
+
 
 class MapMatrix(object):
     def __init__(self, name, width, height):
@@ -54,20 +57,20 @@ class MapMatrix(object):
     def shortest_path(self, origin, destination):
         return self._shortest_path_function.calc(origin, destination)
 
-    def cost(self, node):
-        plot = self._get_plot(node)
+    def cost(self, where):
+        plot = self._get_plot(where)
         return plot.cost()
 
-    def put_piece(self, piece, node):
-        plot = self._get_plot(node)
-        plot.put_piece(piece)
+    def put_piece(self, what, where):
+        plot = self._get_plot(where)
+        plot.put_piece(what)
 
-    def clear_piece(self, node):
-        plot = self._get_plot(node)
+    def clear_piece(self, where):
+        plot = self._get_plot(where)
         plot.clear()
 
-    def get_piece(self, node):
-        plot = self._get_plot(node)
+    def get_piece(self, where):
+        plot = self._get_plot(where)
         return plot.piece
 
     def _get_plot(self, node):
@@ -78,6 +81,9 @@ class MapMatrix(object):
                         self.name,
                         self.width, 
                         self.height)
+
+    def __repr__(self):
+        return str(self)
 
 
 

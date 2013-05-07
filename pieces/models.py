@@ -1,4 +1,5 @@
 from mathematical.trigonometry import Hex
+from mapchart.constants import TERRAIN_COSTS
 import functools
 import sys
 
@@ -60,8 +61,8 @@ class Figure(object):
     MAX_MOVEMENT = sys.maxint
 
     def __init__(self, name, position, located_map, movement, **kargs):
+        self.movement_cost = TERRAIN_COSTS
         self.name = name
-        self.map = located_map
         if not kargs:
             kargs = dict()
         kargs['movement'] = movement
@@ -83,21 +84,13 @@ class Figure(object):
     def move(self, movement_cost, destination):
         if self.stats.movement < movement_cost:
             raise ValueError('Movement cost %s exceeds available movement %s.' % (self.stats.movement, movement_cost))
-        self.map.move(self.position, destination)
         self.position = destination
         self.stats.movement.turn_add(-movement_cost)
 
-    def get_movement_cost(self, point):
-        point_type = self.chart.get_point_type(point)
-        cost = self.get_terrain_movement_cost_for_type(point_type)
-        if cost:
-            return cost
-        else:
-            return self.MAX_MOVEMENT
-
-    def get_terrain_movement_cost_for_type(self, point_type):
-        return 1
-
+    def get_movement_cost(self, point_type):
+        return self.movement_cost.get(
+                    point_type, 
+                    self.MAX_MOVEMENT)
 
 
 

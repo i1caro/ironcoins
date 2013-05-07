@@ -1,36 +1,22 @@
 from mathematical.trigonometry import VancouverDistance
+from collections import deque
 
 
 def is_node_within(width, height, node):
-    if node.x < width and node.y < height:
+    if 0 <= node.x < width and 0 <= node.y < height:
         return True
     return False
 
-# Fringe structure for a faster shortest distance
-class Fringe(object):
-    inside = list()
-    index = dict()
-    size = 0
-    
-    def update(self, where, item):
-        index_number = self.index.get(item, None)
-        if index_number:
-            self.inside.pop(index_number)
-        else:
-            self.size+=1
-        self.inside.insert(where, item)
-        self.index[item] = where
-
-    def pop(self, where):
-        node = self.inside.pop(where)
-        self.index.pop(node)
-        self.size-=1
-
-    def __getitem__(self, where):
-        return self.inside[where]
-
-    def __len__(self):
-        return self.size
+# # Fringe structure for a faster shortest distance
+class Fringe(deque):
+    def burn_nodes(self):
+        while(True):
+            try:
+                node = self.popleft()
+            except IndexError:
+                break
+            else:
+                yield node
 
 
 class ShortestDistance(object):
@@ -44,10 +30,7 @@ class ShortestDistance(object):
                 yield child
 
     def has_path(self, node):
-        if self.cost(node):
-            return False
-        else:
-            return True
+        return self.cost(node)
 
     def get_cache_h(self, cache, node):
         return cache[node][0] + cache[node][2]
@@ -59,18 +42,17 @@ class ShortestDistance(object):
         flimit = self.heuristic(origin, destination)
         cache = {origin : (0, None, flimit)}
         fringe = Fringe()
-        fringe.update(len(fringe),origin)
+        fringe.append(origin)
 
-        found = False
+        found_destination = False
 
-        while(found == False and len(fringe)):
-            len_fringe = len(fringe)
+        while(found_destination == False and fringe):
 
-            for node_index in xrange(len(fringe)):
-                node = fringe[node_index]
+            for node in fringe.burn_nodes():
                 g = cache.get(node, (0, None))[0]
+
                 if node == destination:
-                    found = True
+                    found_destination = True
                     break
 
                 for child in self.children(node):
@@ -82,18 +64,18 @@ class ShortestDistance(object):
                         if g_child >= g_cached:
                             continue
                         heuristic = child_cache[2]
-                    if not heuristic:
-                        heuristic = self.heuristic(child, destination)
-                    cache[child] = (g_child, node, heuristic)
-                    fringe.update(node_index+1, child)
-                fringe.pop(node_index)
+                    
+                    cache_heuristic = heuristic or self.heuristic(
+                                                    child, destination)
 
+                    cache[child] = (g_child, node, cache_heuristic)
+                    fringe.append(child)
             flimit = min([self.get_cache_h(cache, node) for node in fringe])
 
-        path = False
-        if found == True:
-            path = self.reverse_path(cache, destination)
-        return path
+        result = False
+        if found_destination == True:
+            result = self.reverse_path(cache, destination)
+        return result
 
     def reverse_path(self, cache, destination):
         g, parent, nothing = cache[destination]
