@@ -59,6 +59,7 @@ class FigureStats(object):
 
 class Figure(object):
     MAX_MOVEMENT = sys.maxint
+    square_type = Hex
 
     def __init__(self, name, position, located_map, movement, **kargs):
         self.movement_cost = TERRAIN_COSTS
@@ -66,7 +67,7 @@ class Figure(object):
         if not kargs:
             kargs = dict()
         kargs['movement'] = movement
-        kargs['position'] = position
+        kargs['position'] = self.square_type(position)
         self.stats = FigureStats(**kargs)
 
     def __str__(self):
@@ -84,13 +85,12 @@ class Figure(object):
     def move(self, movement_cost, destination):
         if self.stats.movement < movement_cost:
             raise ValueError('Movement cost %s exceeds available movement %s.' % (self.stats.movement, movement_cost))
-        self.position = destination
+        self.position = self.square_type(destination)
         self.stats.movement.turn_add(-movement_cost)
 
-    def get_movement_cost(self, point_type):
-        return self.movement_cost.get(
-                    point_type, 
-                    self.MAX_MOVEMENT)
+    def get_movement_cost(self, terrain_type):
+        return self.movement_cost.get(terrain_type,
+                                self.MAX_MOVEMENT)
 
 
 

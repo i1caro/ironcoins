@@ -1,9 +1,7 @@
-from mapchart.utils import ShortestDistance
 from mapchart.utils import is_node_within
 from mapchart.constants import IMPASSABLE
-from mapchart.constants import GRASS
 from mapchart.constants import TERRAIN_COSTS
-from mapchart.exceptions import OverWriteError
+from mapchart.exceptions import PlotIsFullError
 import functools
 
 
@@ -25,7 +23,7 @@ class Plot(object):
 
     def put_piece(self, piece):
         if self.is_full():
-            raise OverWriteError(self)
+            raise PlotIsFullError(self)
         self.piece = piece
 
     def clear(self):
@@ -39,31 +37,25 @@ class Plot(object):
 
 
 class MapMatrix(object):
-    def __init__(self, name, width, height):
+    def __init__(self, name, map_matrix):
         self.name = name
-        self.width = width
-        self.height = height
-        self.map = self.create_map(width, height)
-        self.is_inside_map = functools.partial(
-                                is_node_within, 
-                                *(width, height))
-        self._shortest_path_function = ShortestDistance(self.is_inside_map, self.cost)
+        self.map = self.build_map(map_matrix)
+        self.width = len(self.map)
+        self.height = len(self.map[0])
+        self.is_inside_map = functools.partial(is_node_within,
+                                *(self.width, self.height))
 
-
-    def create_map(self, width, height):
-        return [[ Plot(GRASS) for y in range(height)] 
-                            for x in range(width)]
-
-    def shortest_path(self, origin, destination):
-        return self._shortest_path_function.calc(origin, destination)
+    def build_map(self, map_matrix):
+        return [[Plot(map_matrix[x][y]) for y in range(map_matrix[0])]
+            for x in range(map_matrix)]
 
     def cost(self, where):
         plot = self._get_plot(where)
         return plot.cost()
 
-    def put_piece(self, what, where):
+    def put_piece(self, which, where):
         plot = self._get_plot(where)
-        plot.put_piece(what)
+        plot.put_piece(which)
 
     def clear_piece(self, where):
         plot = self._get_plot(where)
@@ -77,10 +69,7 @@ class MapMatrix(object):
         return self.map[node.x][node.y]
 
     def __str__(self):
-        return 'Map[%s](%s,%s)' % (
-                        self.name,
-                        self.width, 
-                        self.height)
+        return 'Map[%s](%s,%s)' % (self.name, self.width, self.height)
 
     def __repr__(self):
         return str(self)

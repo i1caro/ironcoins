@@ -1,6 +1,12 @@
 from tests.main import MainTestClass
 from mapchart.models import MapMatrix
 from mathematical.trigonometry import Hex
+from mapchart.constants import GRASS
+
+
+def create_grass_map(width, height):
+    return [[GRASS for y in range(height)]
+        for x in range(width)]
 
 
 class TestMap(MainTestClass):
@@ -8,21 +14,17 @@ class TestMap(MainTestClass):
     destination = Hex(5,9)
     piece = 'test_piece'
 
-    def create_map(self):
-        return MapMatrix('my_map', 20, 15)
+    def setUp(self):
+        grass_map = create_grass_map(20, 15)
+        self.map = MapMatrix('my_map', grass_map)
+        super(TestMap, self).setUp()
 
     def test_creation(self):
-        result = self.create_map()
-        self.assertEqual('Map[my_map](20,15)', str(result))
+        self.assertEqual('Map[my_map](20,15)', str(self.map))
 
-    def test_inside_size(self):
-        result = self.create_map().map
-        self.assertEqual(20, len(result))
-        self.assertEqual(15, len(result[0]))
-
-    def test_cost(self):
-        result = self.create_map().cost(self.origin)
-        self.assertTrue(isinstance(result, int))
+    # def test_cost(self):
+    #     result = self.create_map().cost(self.origin)
+    #     self.assertTrue(isinstance(result, int))
 
     def test_put_piece(self):
         test_map = self.create_map()
@@ -37,12 +39,6 @@ class TestMap(MainTestClass):
         result = test_map.get_piece(self.origin)
         self.assertEqual(None, result)
 
-
-    def test_shortest_path(self):
-        test_map = self.create_map()        
-        result = test_map.shortest_path(self.origin, self.destination)
-        path = '(2,2)(2,3)(2,4)'
-        self.assertEqual(path, str(result))
 
 
 
