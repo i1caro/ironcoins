@@ -1,8 +1,6 @@
 from mapchart.constants import IMPASSABLE as X
 from mapchart.constants import GRASS as o
-from mapchart.models import MapMatrix as Map
-
-
+from mapchart.models import MapBuilder as Map
 import pytest
 
 
@@ -29,25 +27,25 @@ def clean_map():
         for x in range(10)]
     return Map('clean_map', clean_map)
 
-@pytest.mark.skipif(True)
+@pytest.mark.skipif('True')
 @pytest.mark.parametrize(('input', 'expected'), [
     # Normal movement
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((0,0), (1,1), (1,3), (3,3), (4,4))}],
         [(4,4)]
     ),
     # Xnvalid movement
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((4,5), (4,6), (7,8))}],
         [(4,6)]
     ),
     # Xnvalid location for movement
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((4,5), (5,5), (5,6))}],
         [(5,5)]
@@ -59,44 +57,44 @@ def test_simple_moves_in_dirt_map(dirty_map, input, expected):
         assert result == expected
 
 
-@pytest.mark.skipif(True)
+@pytest.mark.skipif('True')
 @pytest.mark.parametrize(('input', 'expected'), [
     # Colision different groups
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((4,5), (5,6), (6,6), (7,7))},
-        {'id': 'PirceB'
+        {'id': 'PirceB',
         'group': 'B',
         'movement': ((6,6), (6,7))}],
         [(6,6), (6,7)]
     ),
     # Colision same group same destination
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((4,4), (5,5), (6,6),)},
-        {'id': 'PirceB'
+        {'id': 'PirceB',
         'group': 'A',
         'movement': ((7,7), (6,6), (6,7))}],
         [(6,6), (6,7)]
     ),
     # Colision same group delaied destination
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((7,7), (6,6), (6,7),)},
-        {'id': 'PirceB'
+        {'id': 'PirceB',
         'group': 'A',
         'movement': ((7,6), (6,6), (7,7))}],
         [(6,7), (7,7)]
     ),
     # Colision same group unreacheable close destination
     (
-        [{'id': 'PirceA'
+        [{'id': 'PirceA',
         'group': 'A',
         'movement': ((7,7), (6,7),)},
-        {'id': 'PirceB'
+        {'id': 'PirceB',
         'group': 'A',
         'movement': ((7,6), (6,6), (6,7), (5,6), )}],
         [(6,7), (6,6)]

@@ -1,5 +1,5 @@
 from tests.main import MainTestClass
-from mapchart.models import MapMatrix
+from mapchart.models import MapBuilder
 from mathematical.trigonometry import Hex
 from mapchart.constants import GRASS
 
@@ -16,7 +16,7 @@ class TestMap(MainTestClass):
 
     def setUp(self):
         grass_map = create_grass_map(20, 15)
-        self.map = MapMatrix('my_map', grass_map)
+        self.map = MapBuilder('my_map', grass_map)
         super(TestMap, self).setUp()
 
     def test_creation(self):

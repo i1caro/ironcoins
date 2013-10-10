@@ -1,7 +1,7 @@
 from mapchart.utils import is_node_within
 from mapchart.constants import IMPASSABLE
 from mapchart.constants import TERRAIN_COSTS
-from mapchart.exceptions import PlotIsFullError
+from mapchart.exceptions import PlotIsFullError, PieceDoesNotExist
 import functools
 
 
@@ -36,7 +36,7 @@ class Plot(object):
         return str(self)
 
 
-class MapMatrix(object):
+class MapBuilder(object):
     def __init__(self, name, map_matrix):
         self.name = name
         self.map = self.build_map(map_matrix)
@@ -44,10 +44,12 @@ class MapMatrix(object):
         self.height = len(self.map[0])
         self.is_inside_map = functools.partial(is_node_within,
                                 *(self.width, self.height))
+        self.pieces_locations = dict()
 
     def build_map(self, map_matrix):
-        return [[Plot(map_matrix[x][y]) for y in range(map_matrix[0])]
-            for x in range(map_matrix)]
+        return [[Plot(map_matrix[x][y])
+                for y in range(len(map_matrix[0]))]
+            for x in range(len(map_matrix))]
 
     def cost(self, where):
         plot = self._get_plot(where)
@@ -56,25 +58,35 @@ class MapMatrix(object):
     def put_piece(self, which, where):
         plot = self._get_plot(where)
         plot.put_piece(which)
+        self.pieces_locations[which] = where
 
     def clear_piece(self, where):
         plot = self._get_plot(where)
+        self.pieces_locations.pop(plot.piece, None)
         plot.clear()
 
-    def get_piece(self, where):
+    def move(self, which, where):
+        origin = self.get_piece_location(which)
+        if origin != where:
+            self.put_piece(which, where)
+            self._get_plot(origin).clear()
+
+    def get_piece(self, *where):
         plot = self._get_plot(where)
         return plot.piece
 
+    def get_piece_location(self, which):
+        try:
+            return self.pieces_locations[which]
+        except KeyError, e:
+            raise PieceDoesNotExist(e)
+
     def _get_plot(self, node):
-        return self.map[node.x][node.y]
+        x, y = node
+        return self.map[x][y]
 
     def __str__(self):
         return 'Map[%s](%s,%s)' % (self.name, self.width, self.height)
 
     def __repr__(self):
         return str(self)
-
-
-
-
-

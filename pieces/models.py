@@ -45,7 +45,7 @@ class FigureStats(object):
     def __init__(self, **kargs):
         for name, value in kargs.items():
             self.create_stat(name, value)
-            
+
     def create_stat(self, name, value):
         setattr(self, name, value)
 
@@ -61,17 +61,17 @@ class Figure(object):
     MAX_MOVEMENT = sys.maxint
     square_type = Hex
 
-    def __init__(self, name, position, located_map, movement, **kargs):
+    def __init__(self, name, side, movement, **kargs):
         self.movement_cost = TERRAIN_COSTS
         self.name = name
+        self.side = side
         if not kargs:
             kargs = dict()
         kargs['movement'] = movement
-        kargs['position'] = self.square_type(position)
         self.stats = FigureStats(**kargs)
 
     def __str__(self):
-        return '%s(%s)' % (self.name, self.stats.position)
+        return '%s(%s)' % (self.name, self.side)
 
     def __repr__(self):
         return self.__str__()
