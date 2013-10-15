@@ -21,31 +21,38 @@ class MovementEngine():
         return (self.in_map.get_piece_location(figure),) + movement
 
     def clean_movement(self, figure, movement):
-        moves = self.add_current_move(figure, movement)
-        return (figure, moves)
-        # return (figure, izip(moves[:-1], moves[1:]))
+        return (figure, iter(movement))
 
     def resolve(self, moves_pieces):
         result = list()
         clean_moves_pieces = [self.clean_movement(**moves_piece)
             for moves_piece in moves_pieces]
 
-        for piece, moves in clean_moves_pieces:
-            last_stand = self.run_until_blocked(piece, moves)
-            result.append(last_stand)
-
-        # number_of_items = len(clean_moves_pieces)
-        # number_of_movement_ends = 0
-        # while number_of_items >= number_of_movement_ends:
-            # for piece, move in clean_moves_pieces:
-            #     try:
-            #         previous, current = move.next()
-            #     except StopIteration:
-            #         number_of_movement_ends += 1
-            #     else:
-            #         if not (self.is_move_available(current) and
-            #             is_hex_distance_reachable(previous,
-            #                                       current)):
-
-
+        number_of_items = len(clean_moves_pieces)
+        number_of_movement_ends = 0
+        pieces_current_move = dict()
+        safe_tries = 0
+        while number_of_items >= number_of_movement_ends and safe_tries < 10:
+            for piece, move in clean_moves_pieces:
+                if not pieces_current_move.get(piece):
+                    try:
+                        current_move = move.next()
+                    except StopIteration:
+                        number_of_movement_ends += 1
+                        continue
+                    try:
+                        self.in_map.move(piece, current_move)
+                    except:
+                        safe_tries+=1
+                        pieces_current_move[piece] = current_move
+                    else:
+                        pieces_current_move[piece] = None
+                else:
+                    current_move = pieces_current_move[piece]
+                    try:
+                        self.in_map.move(piece, current_move)
+                    except:
+                        safe_tries+=1
+                    else:
+                        pieces_current_move[piece] = None
         return result
