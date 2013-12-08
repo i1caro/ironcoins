@@ -28,12 +28,16 @@ def dirty_map():
 @pytest.fixture
 def clean_map():
     clean_map = [[o for y in range(10)]
-        for x in range(10)]
+                 for x in range(10)]
     return Map('clean_map', clean_map)
 
 
 X = 1
 Y = 1
+#
+# (-1,+1)(+0,+1) (+1,+1)
+# (-1,+0)(+0,+0) (+1,+0)
+# [-1,-1](+0,-1) [+1,-1]
 @pytest.mark.parametrize(('origin', 'destination', 'reachable'), [
     ((X, Y), (X+0, Y+0), True),    # Same Place
     ((X, Y), (X+0, Y+1), True),    # North
@@ -81,43 +85,46 @@ def assert_fixtures(this_map, input, expected):
     for result, expect in zip(results, expected):
         assert result == expect
 
-## TODO:
-## test no piece
 
 @pytest.mark.parametrize(('input', 'expected'), [
+    ## test no piece
+    (
+        [{}],
+        []
+    ),
     # No movement
     (
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((0, 0),)}],
+         'side': 'A',
+         'movement': ((0, 0),)}],
         [(0, 0)]
     ),
     # ONe movement
     (
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((0, 0), (1, 0))}],
+         'side': 'A',
+         'movement': ((0, 0), (1, 0))}],
         [(1, 0)]
     ),
     # Normal movement
     (
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((1, 2), (2, 3), (3, 3), (4, 4))}],
+         'side': 'A',
+         'movement': ((1, 2), (2, 3), (3, 3), (4, 4))}],
         [(4, 4)]
     ),
     # # Location Full for movement
     (
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((3, 2), (2, 2), (3, 3), (4, 3))}],
+         'side': 'A',
+         'movement': ((3, 2), (2, 2), (3, 3), (4, 3))}],
         [(3, 3)]
     ),
     # # Too much distance for movement
     (
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((4, 5), (5, 6), (7, 7))}],
+         'side': 'A',
+         'movement': ((4, 5), (5, 6), (7, 7))}],
         [(5, 6)]
     ),
 ])
@@ -126,52 +133,60 @@ def test_simple_moves_in_dirt_map(dirty_map, input, expected):
 
 
 @pytest.mark.parametrize(('input', 'expected'), [
-    (   # No collision normal movement
+    (  # No collision normal movement
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((3, 4), (3, 5), (3, 6))},
-        {'name': 'PirceB',
-        'side': 'B',
-        'movement': ((5, 6), (5, 7))}],
+         'side': 'A',
+         'movement': ((3, 4), (3, 5), (3, 6))},
+         {'name': 'PirceB',
+          'side': 'B',
+          'movement': ((5, 6), (5, 7))}],
         [(3, 6), (5, 7)]
     ),
-    # ( # Colision different groups
-    #     [{'name': 'PirceA',
-    #     'side': 'A',
-    #     'movement': ((4, 5), (5, 6), (6, 6), (7, 7))},
-    #     {'name': 'PirceB',
-    #     'side': 'B',
-    #     'movement': ((6, 6), (6, 7))}],
-    #     [(6, 6), (6, 7)]
-    # ),
-    (   # Colision same group same destination
+    (  # Collision different groups
         [{'name': 'PirceA',
-        'side': 'A',
-        'movement': ((4, 4), (5, 5), (6, 6),)},
-        {'name': 'PirceB',
-        'side': 'A',
-        'movement': ((7, 6), (6, 6), (6, 7))}],
+         'side': 'A',
+         'movement': ((4, 5), (5, 6), (6, 6), (7, 7))},
+         {'name': 'PirceB',
+          'side': 'B',
+          'movement': ((6, 6), (6, 7))}],
         [(6, 6), (6, 7)]
     ),
-    # (    # Colision same group delaied destination
-    #     [{'name': 'PirceA',
-    #     'side': 'A',
-    #     'movement': ((7, 7), (7, 6), (6, 7),)},
-    #     {'name': 'PirceB',
-    #     'side': 'A',
-    #     'movement': ((7, 6), (6, 6), (7, 7))}],
-    #     [(6, 7), (7, 7)]
-    # ),
-#     # Colision same group unreacheable closed destination
-#     (
-#         [{'name': 'PirceA',
-#         'side': 'A',
-#         'movement': ((7,7), (6,7),)},
-#         {'name': 'PirceB',
-#         'side': 'A',
-#         'movement': ((7,6), (6,6), (6,7), (5,6), )}],
-#         [(6,7), (6,6)]
-#     ),
+    (  # Collision fixed target that prevents movement
+        [{'name': 'PirceA',
+         'side': 'A',
+         'movement': ((4, 4), (4, 3), (5, 3), (5, 4), (5, 3), (5, 2))},
+         {'name': 'PirceB',
+          'side': 'B',
+          'movement': ((5, 5))}],  # tainted (4,6),(5,6),(6,6), (6,5),(5,4)
+        [(5, 4), (5, 5)]
+    ),
+    (  # Collision same group same destination
+        [{'name': 'PirceA',
+         'side': 'A',
+         'movement': ((4, 4), (5, 5), (6, 6),)},
+         {'name': 'PirceB',
+          'side': 'A',
+          'movement': ((7, 6), (6, 6), (6, 7))}],
+        [(6, 6), (6, 7)]
+    ),
+    (  # Collision same group delayed destination
+        [{'name': 'PirceA',
+         'side': 'A',
+         'movement': ((7, 7), (7, 6), (6, 7),)},
+         {'name': 'PirceB',
+          'side': 'A',
+          'movement': ((7, 6), (6, 6), (7, 7))}],
+        [(6, 7), (7, 7)]
+    ),
+    (  # Collision same group unreachable closed destination
+        [{'name': 'PirceA',
+         'side': 'A',
+         'movement': ((7, 7), (6, 7),)},
+         {'name': 'PirceB',
+          'side': 'A',
+          'movement': ((7, 6), (6, 6), (6, 7), (5, 6), )}],
+        [(6, 7), (6, 6)]
+    ),
 ])
 def test_concurrent_moves(clean_map, input, expected):
     assert_fixtures(clean_map, input, expected)
