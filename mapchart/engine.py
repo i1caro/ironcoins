@@ -6,17 +6,6 @@ class MovementEngine():
     def __init__(self, in_map):
         self.in_map = in_map
 
-    # def is_move_available(self, move):
-    #     return (self.in_map.cost(move) is not IMPASSABLE)
-
-    # def run_until_blocked(self, piece, moves):
-    #     for move in moves:
-    #         try:
-    #             self.in_map.move(piece, move)
-    #         except:
-    #             break
-    #     return self.in_map.get_piece_location(piece)
-
     def add_current_move(self, figure, movement):
         return (self.in_map.get_piece_location(figure),) + movement
 
@@ -32,7 +21,7 @@ class MovementEngine():
         number_of_movement_ends = 0
         pieces_current_move = dict()
         safe_tries = 0
-        while number_of_items >= number_of_movement_ends and safe_tries < 10:
+        while number_of_items > number_of_movement_ends and safe_tries < 10:
             for piece, move in clean_moves_pieces:
                 if not pieces_current_move.get(piece):
                     try:

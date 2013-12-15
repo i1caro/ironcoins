@@ -86,12 +86,14 @@ def assert_fixtures(this_map, input, expected):
         assert result == expect
 
 
+def test_no_piece(clean_map):
+    no_moves = []
+    engine = MovementEngine(clean_map)
+    results = engine.resolve(no_moves)
+    assert results == []
+
+
 @pytest.mark.parametrize(('input', 'expected'), [
-    ## test no piece
-    (
-        [{}],
-        []
-    ),
     # No movement
     (
         [{'name': 'PirceA',
@@ -157,7 +159,7 @@ def test_simple_moves_in_dirt_map(dirty_map, input, expected):
          'movement': ((4, 4), (4, 3), (5, 3), (5, 4), (5, 3), (5, 2))},
          {'name': 'PirceB',
           'side': 'B',
-          'movement': ((5, 5))}],  # tainted (4,6),(5,6),(6,6), (6,5),(5,4)
+          'movement': ((5, 5),)}],  # tainted (4,6),(5,6),(6,6), (6,5),(5,4)
         [(5, 4), (5, 5)]
     ),
     (  # Collision same group same destination
