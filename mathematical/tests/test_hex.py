@@ -1,8 +1,9 @@
-from tests.main import MainTestClass
+from unittest import TestCase
 from mathematical.trigonometry import Hex
 
-class TestHex(MainTestClass):
-    hex_tile = Hex(2,2)
+
+class TestHex(TestCase):
+    hex_tile = Hex(2, 2)
 
     def test_side_north_west(self):
         result = self.hex_tile.side_north_west

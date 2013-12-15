@@ -1,10 +1,10 @@
-from tests.main import MainTestClass
+from unittest import TestCase
 from mapchart.models import Plot
 from mapchart.constants import TERRAIN_COSTS
 from mapchart.constants import GRASS
-from pieces.models import Figure
 
-class TestPlot(MainTestClass):
+
+class TestPlot(TestCase):
     grass_type = GRASS
     grass_cost = TERRAIN_COSTS[GRASS]
     piece = 'test_piece'
@@ -18,7 +18,7 @@ class TestPlot(MainTestClass):
 
     def test_cost(self):
         result = self.create_plot().cost()
-        self.assertEqual(self.grass_cost, result)
+        self.assertEqual(self.grass_cost, TERRAIN_COSTS[result])
 
     def test_put_piece(self):
         plot = self.create_plot()

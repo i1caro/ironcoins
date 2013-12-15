@@ -1,5 +1,4 @@
-# from mapchart.constants import IMPASSABLE
-# from itertools import izip
+SAFE_TRIES = 10
 
 
 class MovementEngine():
@@ -21,7 +20,7 @@ class MovementEngine():
         number_of_movement_ends = 0
         pieces_current_move = dict()
         safe_tries = 0
-        while number_of_items > number_of_movement_ends and safe_tries < 10:
+        while number_of_items > number_of_movement_ends and safe_tries < SAFE_TRIES:
             for piece, move in clean_moves_pieces:
                 if not pieces_current_move.get(piece):
                     try:
@@ -45,3 +44,5 @@ class MovementEngine():
                     else:
                         pieces_current_move[piece] = None
         return result
+
+

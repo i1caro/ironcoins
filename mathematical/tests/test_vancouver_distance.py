@@ -1,14 +1,15 @@
-from mathematical.tests.main import MainTestClass
+from unittest import TestCase
 from mathematical.trigonometry import Hex
 from mathematical.trigonometry import VancouverDistance
 
-class TestVancouverDistance(MainTestClass):
-    origin = Hex(4,7)
-    destination = Hex(5,3)
+
+class TestVancouverDistance(TestCase):
+    origin = Hex(4, 7)
+    destination = Hex(5, 3)
 
     def get_object(self):
-        return VancouverDistance(self.origin, 
-                            self.destination)
+        return VancouverDistance(self.origin,
+                                 self.destination)
 
     def test_creation(self):
         result = self.get_object()
@@ -19,7 +20,7 @@ class TestVancouverDistance(MainTestClass):
         self.assertEqual('(1, 4)', str(result))
 
     def test_abs(self):
-        result_x, result_y = self.get_object().abs(Hex(-2,6))
+        result_x, result_y = self.get_object().abs(Hex(-2, 6))
         self.assertEqual('2', str(result_x))
         self.assertEqual('6', str(result_y))
 
@@ -37,7 +38,7 @@ class TestVancouverDistance(MainTestClass):
 
     def test_get_vancouver_max(self):
         result = self.get_object().get_vancouver_max()
-        self.assertEqual(4, result)        
+        self.assertEqual(4, result)
 
     def test_norm(self):
         result = self.get_object().calc()

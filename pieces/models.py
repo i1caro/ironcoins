@@ -84,20 +84,14 @@ class Figure(object):
 
     def move(self, movement_cost, destination):
         if self.stats.movement < movement_cost:
-            raise ValueError('Movement cost %s exceeds available movement %s.' % (self.stats.movement, movement_cost))
+            raise ValueError(
+                ('Movement cost {} exceeds available movement {}'
+                 '').format(self.stats.movement, movement_cost))
         self.position = self.square_type(destination)
         self.stats.movement.turn_add(-movement_cost)
 
     def get_movement_cost(self, terrain_type):
         return self.movement_cost.get(terrain_type,
-                                self.MAX_MOVEMENT)
-
-
-
-
-
-
-
-
+                                      self.MAX_MOVEMENT)
 
 
