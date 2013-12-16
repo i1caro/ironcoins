@@ -8,8 +8,7 @@ import pytest
 
 def create_figure(name):
     return Figure(name=name,
-                  side=name,
-                  movement=100)
+                  side=name)
 
 
 @pytest.fixture
@@ -25,7 +24,7 @@ def figure_b():
 @pytest.fixture
 def clean_map():
     created_map = [[GRASS for y in range(10)]
-        for x in range(10)]
+                   for x in range(10)]
     return Map(name='clean_map',
                map_matrix=created_map)
 

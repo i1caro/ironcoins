@@ -11,8 +11,7 @@ def create_grass_map(width, height):
 
 class TestMap(TestCase):
     origin = (2, 2)
-    piece = Figure(movement=100, name='test_figure',
-                   side='')
+    piece = Figure(name='test_figure', side='')
 
     def create_map(self):
         grass_map = create_grass_map(20, 15)

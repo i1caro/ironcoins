@@ -5,6 +5,7 @@ from mapchart.engine import MovementEngine
 from pieces.models import Figure
 
 import pytest
+## Todo insert deduct movement points
 
 
 @pytest.fixture
@@ -54,8 +55,7 @@ def test_reach_in_hex(origin, destination, reachable):
 
 
 def create_figure(item):
-    return Figure(movement=100,
-                  name=item['name'],
+    return Figure(name=item['name'],
                   side=item['side'])
 
 
@@ -192,3 +192,7 @@ def test_simple_moves_in_dirt_map(dirty_map, input, expected):
 ])
 def test_concurrent_moves(clean_map, input, expected):
     assert_fixtures(clean_map, input, expected)
+
+
+
+

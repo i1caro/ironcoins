@@ -41,13 +41,13 @@ class Stat(object):
         return result
 
 
-class FigureStats(object):
-    def __init__(self, **kargs):
-        for name, value in kargs.items():
-            self.create_stat(name, value)
+class FigureStats(dict):
+    # def __init__(self, **kargs):
+    #     for name, value in kargs.items():
+    #         self.create_stat(name, value)
 
-    def create_stat(self, name, value):
-        setattr(self, name, value)
+    # def create_stat(self, name, value):
+    #     setattr(self, name, value)
 
     def regenerate(self):
         for stat in self.__dict__.values():
@@ -61,14 +61,14 @@ class Figure(object):
     MAX_MOVEMENT = sys.maxint
     square_type = Hex
 
-    def __init__(self, name, side, movement, **kargs):
+    def __init__(self, name, side, stats=None):
         self.movement_cost = TERRAIN_COSTS
         self.name = name
         self.side = side
-        if not kargs:
-            kargs = dict()
-        kargs['movement'] = movement
-        self.stats = FigureStats(**kargs)
+
+        if not stats:
+            stats = dict()
+        self.stats = FigureStats(stats)
 
     def __str__(self):
         return '%s(%s)' % (self.name, self.side)
