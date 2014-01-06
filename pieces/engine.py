@@ -1,18 +1,18 @@
-COMBAT_TRIES = 2
+COMBAT_TURNS = 2
 
 
 class Combat():
     def __init__(self, attacker, defender):
-        self.tries = COMBAT_TRIES
+        self.tries = COMBAT_TURNS
         self.attacker = attacker
         self.defender = defender
 
     def resolve_power(self, power):
-        damage = self.attacker.stats.get(power, 0) - self.defender.stats.get(power, 0)
+        damage = self.attacker.get(power) - self.defender.get(power)
         if damage > 0:
-            self.defender.stats['life'] -= damage
+            self.defender.damage(abs(damage))
         else:
-            self.attacker.stats['life'] += damage
+            self.attacker.damage(abs(damage))
 
     def resolve(self):
         for trie in range(self.tries):

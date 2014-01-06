@@ -45,6 +45,6 @@ def test_fight_wins_a(stats_a, stats_b, life):
 
     Combat(figure_a, figure_b).resolve()
 
-    assert figure_a.stats['life'] == life['figure_a']
-    assert figure_b.stats['life'] == life['figure_b']
+    assert figure_a.get('life') == life['figure_a']
+    assert figure_b.get('life') == life['figure_b']
 
