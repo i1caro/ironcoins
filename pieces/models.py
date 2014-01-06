@@ -19,8 +19,8 @@ class Stat(object):
     def __repr__(self):
         return str(self.value)
 
-    def add(self, value):
-        self.born_stat = self.born_stat + value
+    def set(self, value):
+        self.born_stat = value
 
     def turn_add(self, value):
         self.turn_stat = self.turn_stat + value
@@ -62,7 +62,8 @@ class Figure(object):
         'life': 0,
         'ranged_power': 0,
         'melle_power': 0,
-        'infernal_power': 0
+        'infernal_power': 0,
+        'movement': 0
     }
 
     def __init__(self, name, side, stats=None):
@@ -88,18 +89,20 @@ class Figure(object):
     def __repr__(self):
         return self.__str__()
 
+    def set(self, name, value):
+        getattr(self.stats, name).set(value)
+
     def end_turn(self):
         self.stats.regenerate()
 
     def die(self):
         self.is_dead = True
 
-    def move(self, movement_cost, destination):
-        if self.stats.movement < movement_cost:
+    def move(self, movement_cost):
+        if self.stats.movement.value < movement_cost:
             raise ValueError(
                 ('Movement cost {} exceeds available movement {}'
                  '').format(self.stats.movement, movement_cost))
-        self.position = self.square_type(destination)
         self.stats.movement.turn_add(-movement_cost)
 
     def get_movement_cost(self, terrain_type):
