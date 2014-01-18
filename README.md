@@ -1,4 +1,6 @@
 ironcoins
 =========
 
-Testing Google app engine
+TODO:
+
+Test for movement in map wrap

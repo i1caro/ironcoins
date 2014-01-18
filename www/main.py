@@ -1,19 +1,32 @@
 #!flask/bin/python
-from flask import Flask, jsonify
-from flask.ext.httpauth import HTTPBasicAuth
+from www.tests.files import inital_map_view
+from flask.ext.restful import reqparse, Resource, Api
+from flask import Flask
+# from flask.ext.httpauth import HTTPBasicAuth
 
-import json
 
-auth = HTTPBasicAuth()
+# auth = HTTPBasicAuth()
 app = Flask(__name__)
+api = Api(app)
+
+targets_args = reqparse.RequestParser()
+targets_args.add_argument('target', type=str, action='append')
 
 
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-@auth.login_required
-def map_view():
-    with open('./ironcoins/www/tests/map_view.json') as data_file:
-        data = json.load(data_file)
-        return jsonify(data)
+class MapView(Resource):
+    def get(self):
+        return inital_map_view
+
+
+class PlayCard(Resource):
+    def post(card_id):
+        args = targets_args.parse_args()
+        return 201
+
+
+api.add_resource(MapView, '/map', endpoint='map_view')
+api.add_resource(PlayCard, '/card', endpoint='play_card')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
