@@ -1,7 +1,9 @@
 #!flask/bin/python
 from flask.ext.restful import Api
 from flask import Flask
-from flask.ext.mongokit import MongoKit
+from ming import create_datastore, Session
+
+
 # from flask.ext.httpauth import HTTPBasicAuth
 
 #Application
@@ -10,7 +12,16 @@ from flask.ext.mongokit import MongoKit
 app = Flask(__name__)
 app.config.from_object('www.settings')
 api = Api(app)
-db = MongoKit(app)
+
+bind = create_datastore(
+    '{}://{}:{}/{}'.format(
+        app.config['MONGODB_CONNECTION'],
+        app.config['MONGODB_HOST'],
+        app.config['MONGODB_PORT'],
+        app.config['MONGODB_DATABASE'],
+    )
+)
+session = Session(bind)
 
 
 if __name__ == '__main__':

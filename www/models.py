@@ -1,66 +1,64 @@
-from mongokit import Document
+from ming import Field, schema
+from ming.declarative import Document
+
+from www.main import session
 
 
 class Map(Document):
-    __collection__ = 'map'
+    class __mongometa__:
+        session = session
+        name = 'map'
 
-    structure = {
-        'map_matrix': list,
-        'creatures': list,
-        'borders': list,
-        'moves': list
-    }
-    required_fields = ['map_matrix']
-    default_values = {
-        'creatures': [],
-        'borders': [],
-        'moves': []
-    }
+    _id = Field(schema.ObjectId),
+    map_matrix = Field([[str]], if_missing=[[]])
+    creatures = Field(
+        {str: {'position': [int]}},
+        if_missing=[]
+    )
+    borders = Field(
+        {str: {'position': [[int]]}},
+        if_missing=[]
+    )
+    moves = Field(
+        [[int, int]],
+        if_missing=[]
+    )
 
 
 class Player(Document):
-    __collection__ = 'player'
+    class __mongometa__:
+        session = session
+        name = 'player'
 
-    structure = {
-        'id': str,
-        'side': str,
-        'borders': str,
-        'name': unicode,
-        'cards': list,
-        'resources': {
-            'souls': int,
-            'fire': int,
-            'ichor': int,
-            'dark': int,
-            'prestige': int
-        },
-        'creatures': dict
-    }
-    required_fields = [
-        'id', 'side', 'name'
-    ]
-    default_values = {
-        'cards': [],
-        'resources.souls': 0,
-        'resources.fire': 0,
-        'resources.ichor': 0,
-        'resources.dark': 0,
-        'resources.prestige': 0,
-        'creatures': {}
-    }
+    _id = Field(schema.ObjectId),
+    side = Field(str)
+    borders = Field(str)
+    name = Field(str)
+    cards = Field(
+        [str],
+        if_missing=[]
+    )
+    resources = Field({
+        'souls': int,
+        'fire': int,
+        'ichor': int,
+        'dark': int,
+        'prestige': int
+    })
+    creatures = Field({str: None}, if_missing=[])
 
 
 class Creature(Document):
-    __collection__ = 'creature'
+    class __mongometa__:
+        session = session
+        name = 'creature'
 
-    structure = {
-        'map': str,
-        'card': str,
-        'name': str,
-        'side': str,
-        'stats': dict,
-        'cards': list
-    }
-    required_fields = [
-        'id', 'card', 'name', 'side', 'stats', 'cards'
-    ]
+    _id = Field(schema.ObjectId),
+    card = Field(str),
+    name = Field(str),
+    side = Field(str),
+    stats = Field([
+        {str: [int]}
+    ], if_missing=[]),
+    cards = Field([str], if_missing=[])
+
