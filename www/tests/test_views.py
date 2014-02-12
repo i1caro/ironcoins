@@ -2,7 +2,7 @@ from www.tests.files import inital_map_view, after_move_map_view
 from www.models import Map, Player, Creature
 from www.main import app
 from ming import create_datastore
-from ming import mim, Session
+from ming import Session
 from flask import url_for
 import pytest
 import json
@@ -14,18 +14,10 @@ def flask_app():
     return app
 
 
-@pytest.fixture()
-def no_requests(monkeypatch):
-    bind = create_datastore(
-        '{}://{}:{}/{}'.format(
-            'mim',
-            app.config['MONGODB_HOST'],
-            12345,
-            'fuckall',
-        )
-    )
-    monkeypatch.setattr(Session, 'bind', bind, False)
-    # monkeypatch.setattr('ming.metadata._ManagerDescriptor.engine', 'Session(bind).bind.bind')
+@pytest.fixture(autouse=True)
+def mock_mongo_connection(monkeypatch):
+    new_bind = create_datastore('min://localhost:27017/ironcoins')
+    monkeypatch.setattr(Session, 'db', new_bind.db)
 
 
 def base_url(*args, **kwargs):
@@ -33,7 +25,7 @@ def base_url(*args, **kwargs):
         return url_for(*args, **kwargs)
 
 
-def test_map_view(flask_app, no_requests):
+def test_map_view(flask_app):
     # import ipdb; ipdb.set_trace()
 
     m = Map(inital_map_view['map'])
