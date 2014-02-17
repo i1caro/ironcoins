@@ -1,28 +1,27 @@
 #!flask/bin/python
 from flask.ext.restful import Api
 from flask import Flask
-from ming import create_datastore, Session
-
-
+from pymongo import MongoClient
+from www.settings import CONNECTION
+from www.settings import MONGODB_DATABASE
 # from flask.ext.httpauth import HTTPBasicAuth
 
 #Application
 # auth = HTTPBasicAuth()
-
 app = Flask(__name__)
 app.config.from_object('www.settings')
 api = Api(app)
 
-bind = create_datastore(
-    '{}://{}:{}/{}'.format(
-        app.config['MONGODB_CONNECTION'],
-        app.config['MONGODB_HOST'],
-        app.config['MONGODB_PORT'],
-        app.config['MONGODB_DATABASE'],
-    )
-)
-session = Session(bind)
 
+class SingleConnection(MongoClient):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(SingleConnection, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
+session = SingleConnection(CONNECTION)[MONGODB_DATABASE]
 
 if __name__ == '__main__':
     app.run()

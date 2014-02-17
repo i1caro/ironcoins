@@ -1,23 +1,31 @@
 from www.tests.files import inital_map_view, after_move_map_view
-from www.models import Map, Player, Creature
-from www.main import app
-from ming import create_datastore
-from ming import Session
+from www import main
+
+from pymongo import MongoClient
 from flask import url_for
 import pytest
 import json
+import copy
 
 
 @pytest.fixture
 def flask_app():
-    app.config['TESTING'] = True
-    return app
+    main.app.config['TESTING'] = True
+    return main.app
+
+
+def clean_db(session):
+    for name in session.collection_names():
+        if name == 'system.indexes':
+            continue
+        main.session.drop_collection(name)
 
 
 @pytest.fixture(autouse=True)
 def mock_mongo_connection(monkeypatch):
-    new_bind = create_datastore('min://localhost:27017/ironcoins')
-    monkeypatch.setattr(Session, 'db', new_bind.db)
+    new_session = MongoClient('mongodb://localhost:27017')['tests']
+    monkeypatch.setattr(main.SingleConnection, '_instance', new_session)
+    clean_db(main.session)
 
 
 def base_url(*args, **kwargs):
@@ -26,12 +34,13 @@ def base_url(*args, **kwargs):
 
 
 def test_map_view(flask_app):
-    # import ipdb; ipdb.set_trace()
-
-    m = Map(inital_map_view['map'])
-    m.m.insert()
-    for key, player_data in inital_map_view['players'].items():
-        Player(player_data).m.insert()
+    insert_data = copy.deepcopy(inital_map_view)
+    main.session.map.insert(insert_data['map'])
+    players = []
+    for key, player_data in insert_data['players'].items():
+        player_data['_id'] = key
+        players.append(player_data)
+    main.session.player.insert(players)
 
     map_url = base_url('game_view')
     with flask_app.test_client() as client:
