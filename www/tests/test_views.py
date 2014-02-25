@@ -69,7 +69,6 @@ def test_play_card(flask_app, initial_data):
         assert view.status_code == 200
 
         map_view = client.get(map_url)
-        import ipdb; ipdb.set_trace()
         map_view_response_dict = json.loads(map_view.response.next())
         assert map_view_response_dict == move_card_map_view
 

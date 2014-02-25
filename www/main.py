@@ -12,15 +12,6 @@ app = Flask(__name__)
 app.config.from_object('www.settings')
 api = Api(app)
 
-
-# class SingleConnection(MongoClient):
-#     _instance = None
-
-#     def __new__(cls, *args, **kwargs):
-#         if cls._instance is None:
-#             cls._instance = super(SingleConnection, cls).__new__(cls, *args, **kwargs)
-#         return cls._instance
-
 session = MongoClient(CONNECTION)[MONGODB_DATABASE]
 
 if __name__ == '__main__':
