@@ -10,4 +10,5 @@ def load_file(name):
 
 
 inital_map_view = load_file('initial_map_view.json')
+move_card_map_view = load_file('move_card_map_view.json')
 after_move_map_view = load_file('after_move_map_view.json')

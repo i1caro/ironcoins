@@ -13,15 +13,15 @@ app.config.from_object('www.settings')
 api = Api(app)
 
 
-class SingleConnection(MongoClient):
-    _instance = None
+# class SingleConnection(MongoClient):
+#     _instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(SingleConnection, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
+#     def __new__(cls, *args, **kwargs):
+#         if cls._instance is None:
+#             cls._instance = super(SingleConnection, cls).__new__(cls, *args, **kwargs)
+#         return cls._instance
 
-session = SingleConnection(CONNECTION)[MONGODB_DATABASE]
+session = MongoClient(CONNECTION)[MONGODB_DATABASE]
 
 if __name__ == '__main__':
     app.run()
