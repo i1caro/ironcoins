@@ -1,5 +1,4 @@
 from flask.ext.restful import reqparse, Resource
-from bson.objectid import ObjectId
 
 from www.main import session
 
