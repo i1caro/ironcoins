@@ -16,7 +16,7 @@
           "card": "123444",
           "name": "Soldier",
           "side": "stemput",
-          "stats": {"life": [10, 0], "melle_power": [20, 0], "movement": [2, -2]},
+          "stats": {"life": [10, 0], "melle_power": [20, 0], "movement": [2, 0]},
           "cards": ["122222", "233222", null ]
         },
         "233": {

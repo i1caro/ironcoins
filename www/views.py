@@ -35,7 +35,7 @@ class PlayCard(Resource):
                                     'side': 'stemput',
                                     'stats': {'life': [10, 0],
                                             'melle_power': [20, 0],
-                                            'movement': [2, -2]}},
+                                            'movement': [2, 0]}},
                             '233': {'card': '124444',
                                      'cards': [None, None, None],
                                      'name': 'Guard',
