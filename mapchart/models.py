@@ -110,10 +110,3 @@ class HexMap(MapBuilder):
             super(HexMap, self).move(which, where)
         else:
             raise HexNotConnected(origin, where)
-
-
-class Player():
-    def __init__(self, name, side):
-        self.name = name
-        self.side = side
-
